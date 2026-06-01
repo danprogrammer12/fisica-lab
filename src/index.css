@@ -1,0 +1,76 @@
+@import "tailwindcss";
+@import "katex/dist/katex.min.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  background-color: #070b14;
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1524;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+/* Canvas de Three.js */
+canvas {
+  outline: none;
+  display: block;
+}
+
+/* Gradiente de fondo para hero */
+.hero-gradient {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(29, 78, 216, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 60% 80%, rgba(16, 185, 129, 0.06) 0%, transparent 50%),
+    linear-gradient(135deg, #070b14 0%, #0d1524 100%);
+}
+
+/* KaTeX override para tema oscuro */
+.katex {
+  color: #e2e8f0;
+  font-size: 1em;
+}
+
+.katex-display {
+  margin: 0.5em 0;
+  overflow-x: auto;
+}
+
+/* Clip text utility */
+.bg-clip-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+}
