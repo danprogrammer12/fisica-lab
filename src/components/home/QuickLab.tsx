@@ -8,7 +8,7 @@ function drawField(
   W: number,
   H: number,
   charge: number,
-  magnitude: number,
+  _magnitude: number,
   numLines: number,
 ) {
   ctx.clearRect(0, 0, W, H)
@@ -25,7 +25,6 @@ function drawField(
 
   const cx = W / 2
   const cy = H / 2
-  const scale = 55 * (magnitude / 5)
   const isPos = charge >= 0
   const lineColor = isPos ? 'rgba(249,115,22,' : 'rgba(129,140,248,'
 

@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback, useState } from 'react'
+import { useRef, useEffect, useCallback } from 'react'
 
 // ── Physics ────────────────────────────────────────────────────
 function dipoleField(px: number, py: number, d: number): [number, number] {
