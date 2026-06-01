@@ -4,6 +4,7 @@ import { Atom, ChevronRight, ArrowDown, MoveRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { HeroScene } from '../components/home/HeroScene'
 import { DipoleFieldCanvas } from '../components/home/DipoleFieldCanvas'
+import { PhenomenaShowcase } from '../components/home/PhenomenaShowcase'
 import { MODULES } from '../data/modules'
 
 // ── Minimal nav ────────────────────────────────────────────────
@@ -197,127 +198,6 @@ function DipoleSection() {
   )
 }
 
-// ── SECTION 3: Module entry — minimal list ─────────────────────
-const MODULE_ICONS: Record<string, string> = {
-  'campo-electrico': '⚡',
-  'ley-gauss':       '🔮',
-  'potencial':       '🌊',
-  'capacitancia':    '🔋',
-  'circuitos':       '⚙️',
-  'magnetismo':      '🧲',
-}
-
-const MODULE_COLORS: Record<string, string> = {
-  'campo-electrico': '#60a5fa',
-  'ley-gauss':       '#34d399',
-  'potencial':       '#a78bfa',
-  'capacitancia':    '#fbbf24',
-  'circuitos':       '#f87171',
-  'magnetismo':      '#22d3ee',
-}
-
-function ModulesSection() {
-  const ref = useRef<HTMLDivElement>(null)
-  const inView = useInView(ref, { once: true, margin: '-10%' })
-  const available = MODULES.filter(m => m.isAvailable)
-
-  return (
-    <section
-      ref={ref}
-      className="relative px-8 md:px-16 py-24"
-      style={{ borderTop: '1px solid rgba(255,255,255,0.04)' }}
-    >
-      {/* Subtle bg glow */}
-      <div className="absolute inset-0 pointer-events-none" style={{
-        background: 'radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.05) 0%, transparent 60%)',
-      }} />
-
-      <div className="relative max-w-5xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.7 }}
-          className="mb-14"
-        >
-          <p className="text-xs tracking-[0.2em] text-white/25 uppercase mb-3">Módulos</p>
-          <h2 className="text-4xl font-black text-white tracking-tight">
-            6 fenómenos.<br />
-            <span className="text-white/25">Explóralos todos.</span>
-          </h2>
-        </motion.div>
-
-        {/* Module list — not cards */}
-        <div className="space-y-0">
-          {available.map((m, i) => (
-            <motion.div
-              key={m.id}
-              initial={{ opacity: 0, x: -12 }} animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
-            >
-              <Link to={m.path} className="group block">
-                <div
-                  className="flex items-center justify-between py-5 transition-all duration-200"
-                  style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}
-                >
-                  <div className="flex items-center gap-5">
-                    <span className="text-xl w-8 text-center">{MODULE_ICONS[m.id] ?? '⚡'}</span>
-                    <div>
-                      <p className="text-sm font-semibold text-white/60 group-hover:text-white transition-colors">
-                        {m.title}
-                      </p>
-                      <p className="text-xs text-white/20 mt-0.5">{m.subtitle}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span
-                      className="hidden sm:block text-xs px-2 py-0.5 rounded-full font-mono opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{ color: MODULE_COLORS[m.id], background: MODULE_COLORS[m.id] + '18' }}
-                    >
-                      {m.scenes.length} sims
-                    </span>
-                    <MoveRight
-                      size={14}
-                      className="text-white/15 group-hover:text-white/60 group-hover:translate-x-1 transition-all"
-                    />
-                  </div>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-// ── SECTION 4: Minimal info strip ─────────────────────────────
-function InfoStrip() {
-  const items = [
-    { value: '12', label: 'Simulaciones 3D' },
-    { value: '6', label: 'Módulos completos' },
-    { value: '24', label: 'Preguntas quiz' },
-    { value: '∞', label: 'Interacciones' },
-  ]
-  return (
-    <section
-      className="px-8 py-12"
-      style={{ borderTop: '1px solid rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}
-    >
-      <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-        {items.map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
-            viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.6 }}
-            className="text-center"
-          >
-            <p className="text-3xl font-black text-white/80 tabular-nums">{item.value}</p>
-            <p className="text-xs text-white/25 mt-1 tracking-wide">{item.label}</p>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  )
-}
 
 // ── Footer ─────────────────────────────────────────────────────
 function Footer() {
@@ -340,8 +220,7 @@ export function Home() {
       <Nav />
       <HeroSection />
       <DipoleSection />
-      <InfoStrip />
-      <ModulesSection />
+      <PhenomenaShowcase />
       <Footer />
     </div>
   )
