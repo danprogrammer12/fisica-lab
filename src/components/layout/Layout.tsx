@@ -16,7 +16,7 @@ export function Layout({
   onSceneChange,
 }: LayoutProps) {
   return (
-    <div className="flex flex-col min-h-screen" style={{ backgroundColor: '#070b14' }}>
+    <div className="flex flex-col min-h-screen" style={{ backgroundColor: '#020617' }}>
       <Navbar />
 
       <div className="flex flex-1 pt-14">
