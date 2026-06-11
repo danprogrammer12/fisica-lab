@@ -131,8 +131,8 @@ function EFieldCylinder({ r, L, lambda }: { r: number; L: number; lambda: number
         const pos = new THREE.Vector3(r * nx, y, r * nz)
         const dir = new THREE.Vector3(nx * (isPos ? 1 : -1), 0, nz * (isPos ? 1 : -1))
         const arr = new THREE.ArrowHelper(dir, pos, lenVis, color, lenVis * 0.3, lenVis * 0.12)
-          ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.6; arr.line.material.transparent = true
-          ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.6; arr.cone.material.transparent = true
+          ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.6; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+          ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.6; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
         group.add(arr)
       }
     }

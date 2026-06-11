@@ -137,8 +137,8 @@ function EFieldOnSurface({ r, R, Q }: { r: number; R: number; Q: number }) {
       const pos   = new THREE.Vector3(nx * r, ny * r, nz * r)
       const dir   = new THREE.Vector3(nx, ny, nz).multiplyScalar(isPos ? 1 : -1)
       const arr   = new THREE.ArrowHelper(dir, pos, lenVis, color, lenVis * 0.3, lenVis * 0.12)
-        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.65; arr.line.material.transparent = true
-        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.65; arr.cone.material.transparent = true
+        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.65; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.65; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
       group.add(arr)
     }
     return group

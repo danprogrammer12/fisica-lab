@@ -201,8 +201,8 @@ function DipolFieldLines({ q, sep }: { q: number; sep: number }) {
       const dir = to.clone().sub(from).normalize()
       const len = 0.4
       const arr = new THREE.ArrowHelper(dir, pts[midIdx], len, c, len * 0.4, len * 0.15)
-        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.6; arr.line.material.transparent = true
-        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.6; arr.cone.material.transparent = true
+        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.6; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.6; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
       group.add(arr)
     }
     return group

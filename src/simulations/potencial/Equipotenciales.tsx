@@ -116,8 +116,8 @@ function FieldLines({ charge }: { charge: number }) {
       const mid = from.clone().lerp(to, 0.5)
       const len = 0.45
       const arr = new THREE.ArrowHelper(dir, mid, len, c, len * 0.4, len * 0.15)
-        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.5; arr.line.material.transparent = true
-        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.5; arr.cone.material.transparent = true
+        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.5; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.5; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
       group.add(arr)
     }
     return group
