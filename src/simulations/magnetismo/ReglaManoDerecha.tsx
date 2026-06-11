@@ -97,7 +97,7 @@ function ReferenceAxes() {
       {axes.map(a => (
         <group key={a.lbl}>
           <Line points={a.pts} color={a.color} lineWidth={1} transparent opacity={0.30} />
-          <Text position={a.pos as [number,number,number]} fontSize={0.22} color={a.color} transparent opacity={0.5}>
+          <Text position={a.pos as [number,number,number]} fontSize={0.22} color={a.color}>
             {a.lbl}
           </Text>
         </group>
@@ -398,8 +398,8 @@ function BFieldBackground({ b }: { b: THREE.Vector3 }) {
         const x = -GR + i * step, y = -GR + j * step
         const len = 0.55
         const arr = new THREE.ArrowHelper(b.clone().normalize(), new THREE.Vector3(x, y, -1), len, color, len * 0.3, len * 0.12)
-          ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.18; arr.line.material.transparent = true
-          ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.18; arr.cone.material.transparent = true
+          ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.18; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+          ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.18; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
         group.add(arr)
       }
     }

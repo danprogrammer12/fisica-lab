@@ -11,7 +11,7 @@ interface Props {
 
 export function CapacitorVista2DScene({ area, separation, kappa, voltage }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const animRef   = useRef<number>()
+  const animRef   = useRef<number>(0)
   const tRef      = useRef(0)
   const lastTs    = useRef(0)
 

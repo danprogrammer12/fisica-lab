@@ -91,8 +91,8 @@ function DBContributions({ I, R, show }: { I: number; R: number; show: boolean }
       const dir = b.clone().normalize()
       const arr = new THREE.ArrowHelper(dir, new THREE.Vector3(px, py, pz), lenVis,
         color, lenVis * 0.35, lenVis * 0.13)
-        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.7; arr.line.material.transparent = true
-        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.7; arr.cone.material.transparent = true
+        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.7; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.7; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
       group.add(arr)
     }
     return group
@@ -131,8 +131,8 @@ function BFieldGrid({ I, R }: { I: number; R: number }) {
       const dir = b.clone().normalize()
       const arr = new THREE.ArrowHelper(dir, new THREE.Vector3(px, py, pz), lenVis,
         color, lenVis * 0.3, lenVis * 0.12)
-        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.55; arr.line.material.transparent = true
-        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.55; arr.cone.material.transparent = true
+        ; (arr.line.material as THREE.LineBasicMaterial).opacity = 0.55; (arr.line.material as THREE.LineBasicMaterial).transparent = true
+        ; (arr.cone.material as THREE.MeshBasicMaterial).opacity = 0.55; (arr.cone.material as THREE.MeshBasicMaterial).transparent = true
       group.add(arr)
     }
     return group
@@ -184,9 +184,9 @@ function Axes() {
       <Line points={[[-5, 0, 0], [5, 0, 0]]} color="#3b9eff" lineWidth={1} transparent opacity={0.3} />
       <Line points={[[0, -5, 0], [0, 5, 0]]} color="#2de0a5" lineWidth={1} transparent opacity={0.3} />
       <Line points={[[0, 0, -5], [0, 0, 5]]} color="#ff4d6d" lineWidth={1} transparent opacity={0.3} />
-      <Text position={[5.3, 0, 0]} fontSize={0.2} color="#3b9eff" transparent opacity={0.5}>x</Text>
-      <Text position={[0, 5.3, 0]} fontSize={0.2} color="#2de0a5" transparent opacity={0.5}>y</Text>
-      <Text position={[0, 0, 5.3]} fontSize={0.2} color="#ff4d6d" transparent opacity={0.5}>z (eje)</Text>
+      <Text position={[5.3, 0, 0]} fontSize={0.2} color="#3b9eff">x</Text>
+      <Text position={[0, 5.3, 0]} fontSize={0.2} color="#2de0a5">y</Text>
+      <Text position={[0, 0, 5.3]} fontSize={0.2} color="#ff4d6d">z (eje)</Text>
     </group>
   )
 }
