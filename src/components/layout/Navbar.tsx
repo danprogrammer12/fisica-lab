@@ -57,7 +57,7 @@ export function Navbar() {
         className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full text-xs"
         style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
       >
-        <div className="flex gap-1">
+        <div className="flex gap-1.5">
           {available.map(m => {
             const done = getProgress(m.id)?.quizScore != null
             return (

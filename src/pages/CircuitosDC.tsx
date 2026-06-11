@@ -55,7 +55,7 @@ export function CircuitosDC() {
         >
           <BookOpen size={12} />Quiz
         </button>
-        <div className="flex items-center gap-2 text-xs text-slate-600 ml-2"><Wifi size={12} /><span>Dinámico en tiempo real</span></div>
+        <div className="flex items-center gap-2 text-xs text-slate-500 ml-2"><Wifi size={12} /><span>Dinámico en tiempo real</span></div>
       </div>
 
       <div className="flex h-[calc(100vh-7.5rem)] overflow-hidden">

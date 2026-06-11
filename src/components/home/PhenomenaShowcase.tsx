@@ -567,7 +567,7 @@ function PhenomenonRow({ phen, index }: { phen: Phenomenon; index: number }) {
         className="absolute top-5 left-5 px-2 py-1 rounded-lg text-xs font-mono"
         style={{ background: 'rgba(2,6,23,0.7)', color: 'rgba(255,255,255,0.2)', border: '1px solid rgba(255,255,255,0.05)' }}
       >
-        {phen.title.toLowerCase().replace(' ', '_')}.sim
+        {phen.id}.sim
       </div>
     </motion.div>
   )
@@ -575,17 +575,14 @@ function PhenomenonRow({ phen, index }: { phen: Phenomenon; index: number }) {
   return (
     <div
       ref={rowRef}
-      className="relative flex flex-col lg:flex-row"
+      className={`relative flex flex-col ${reversed ? 'lg:flex-row-reverse' : 'lg:flex-row'}`}
       style={{
         minHeight: '80vh',
         borderTop: '1px solid rgba(255,255,255,0.04)',
       }}
     >
-      {reversed ? (
-        <>{vizPanel}{textPanel}</>
-      ) : (
-        <>{textPanel}{vizPanel}</>
-      )}
+      {textPanel}
+      {vizPanel}
     </div>
   )
 }
@@ -613,8 +610,9 @@ export function PhenomenaShowcase() {
         >
           Explora los<br />
           <span style={{ color: 'transparent', backgroundImage: 'linear-gradient(90deg,#60a5fa,#a78bfa)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
-            fenómenos.
+            fenómenos
           </span>
+          <span className="text-white">.</span>
         </motion.h2>
       </div>
 

@@ -142,6 +142,55 @@ function BArrows({ L, current }: { L: number; current: number }) {
   return <primitive object={arrows} />
 }
 
+// ── Partículas de corriente animadas en el solenoide ──────────
+function CurrentParticles({
+  N, L, radius, current,
+}: { N: number; L: number; radius: number; current: number }) {
+  const NUM = 8
+  const dir = current >= 0 ? 1 : -1
+  const color = current >= 0 ? '#fbbf24' : '#f97316'
+
+  // Pre-compute helix path (N turns)
+  const helixPts = useMemo(() => {
+    const pts: THREE.Vector3[] = []
+    const totalSteps = N * 64
+    for (let i = 0; i <= totalSteps; i++) {
+      const frac  = i / totalSteps
+      const angle = frac * N * Math.PI * 2 * dir
+      const z     = -L / 2 + frac * L
+      pts.push(new THREE.Vector3(radius * Math.cos(angle), radius * Math.sin(angle), z))
+    }
+    return pts
+  }, [N, L, radius, dir])
+
+  const meshRefs = useRef<(THREE.Mesh | null)[]>([])
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime()
+    for (let i = 0; i < NUM; i++) {
+      const mesh = meshRefs.current[i]
+      if (!mesh) continue
+      const frac = ((i / NUM + t * 0.18) % 1 + 1) % 1
+      const idx  = Math.min(Math.floor(frac * (helixPts.length - 1)), helixPts.length - 1)
+      const pt   = helixPts[idx]
+      mesh.position.set(pt.x, pt.y, pt.z)
+      const alpha = Math.sin(frac * Math.PI)
+      ;(mesh.material as THREE.MeshStandardMaterial).opacity = alpha * 0.9
+    }
+  })
+
+  return (
+    <>
+      {Array.from({ length: NUM }, (_, i) => (
+        <mesh key={i} ref={(el) => { meshRefs.current[i] = el }}>
+          <sphereGeometry args={[0.055, 8, 8]} />
+          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={1.5} transparent opacity={0.8} />
+        </mesh>
+      ))}
+    </>
+  )
+}
+
 // ── Esfera pulsante en el centro ───────────────────────────────
 function AxisGlow() {
   const meshRef = useRef<THREE.Mesh>(null)
@@ -184,6 +233,7 @@ export function CampoSolenoidScene({ N, L, radius, current }: CampoSolenoidScene
       <SolenoidCoils N={N} L={L} radius={radius} current={current} />
       <BFieldLines L={L} radius={radius} current={current} />
       <BArrows L={L} current={current} />
+      <CurrentParticles N={N} L={L} radius={radius} current={current} />
       <AxisGlow />
 
       {/* Label del campo */}

@@ -1,17 +1,19 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Wifi, BookOpen } from 'lucide-react'
 import { Layout } from '../components/layout/Layout'
+import { InfografiaPanel } from '../components/ui/InfografiaPanel'
 import { SliderControl } from '../components/ui/SliderControl'
 import { FormulaCard } from '../components/ui/FormulaCard'
 import { InfoPanel, ValueDisplay } from '../components/ui/InfoPanel'
 import { QuizEngine } from '../components/ui/QuizEngine'
 import { PotencialCargaScene } from '../simulations/potencial/PotencialCarga'
 import { EquipotencialesScene } from '../simulations/potencial/Equipotenciales'
+import { PotencialDipoloScene } from '../simulations/potencial/PotencialDipolo'
 import { K_COULOMB, NC_TO_C, MIN_DISTANCE } from '../physics/constants'
 import { useProgress } from '../hooks/useProgress'
 import { QUIZZES } from '../data/quizzes'
 
-type SceneId = 'potencial-carga' | 'equipotenciales'
+type SceneId = 'potencial-carga' | 'equipotenciales' | 'dipolo'
 
 const ACCENT = '#8b5cf6'
 const quiz = QUIZZES.find((q) => q.moduleId === 'potencial')!
@@ -20,6 +22,7 @@ export function PotencialElectrico() {
   const [activeScene, setActiveScene] = useState<SceneId>('potencial-carga')
   const [charge, setCharge] = useState(5)
   const [numLines, setNumLines] = useState(12)
+  const [dipoleSep, setDipoleSep] = useState(2.0)
   const [showQuiz, setShowQuiz] = useState(false)
   const { markVisited, saveQuizScore } = useProgress()
 
@@ -40,6 +43,7 @@ export function PotencialElectrico() {
         {[
           { id: 'potencial-carga', label: 'Potencial de Carga' },
           { id: 'equipotenciales', label: 'Equipotenciales' },
+          { id: 'dipolo',          label: 'Potencial del Dipolo' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -50,17 +54,20 @@ export function PotencialElectrico() {
             {tab.label}
           </button>
         ))}
-        <button
-          onClick={() => setShowQuiz((v) => !v)}
-          className="ml-auto px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all"
-          style={showQuiz ? { color: ACCENT, backgroundColor: `${ACCENT}20` } : { color: '#64748b', backgroundColor: '#1e293b' }}
-        >
-          <BookOpen size={12} />
-          Quiz
-        </button>
-        <div className="flex items-center gap-2 text-xs text-slate-600 ml-2">
-          <Wifi size={12} />
-          <span>V calculado en tiempo real</span>
+        <div className="ml-auto flex items-center gap-2">
+          <InfografiaPanel src="/infografias/potencial.png" title="Infografía — Potencial Eléctrico" accentColor={ACCENT} />
+          <button
+            onClick={() => setShowQuiz((v) => !v)}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all"
+            style={showQuiz ? { color: ACCENT, backgroundColor: `${ACCENT}20` } : { color: '#64748b', backgroundColor: '#1e293b' }}
+          >
+            <BookOpen size={12} />
+            Quiz
+          </button>
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <Wifi size={12} />
+            <span>V calculado en tiempo real</span>
+          </div>
         </div>
       </div>
 
@@ -70,7 +77,9 @@ export function PotencialElectrico() {
           <div className="mb-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Escena activa</p>
             <h2 className="text-base font-bold text-slate-200">
-              {activeScene === 'potencial-carga' ? 'Potencial de Carga' : 'Equipotenciales'}
+              {activeScene === 'potencial-carga' ? 'Potencial de Carga'
+                : activeScene === 'equipotenciales' ? 'Superficies Equipotenciales'
+                : 'Potencial del Dipolo Eléctrico'}
             </h2>
           </div>
 
@@ -83,6 +92,10 @@ export function PotencialElectrico() {
               <SliderControl label="Líneas equipotenciales" value={numLines} min={5} max={24} step={1}
                 onChange={setNumLines} color="#34d399"
               />
+            )}
+            {activeScene === 'dipolo' && (
+              <SliderControl label="Separación 2d" value={dipoleSep} min={0.5} max={4} step={0.1} unit=" m"
+                onChange={setDipoleSep} color="#c4b5fd" />
             )}
           </div>
 
@@ -101,13 +114,19 @@ export function PotencialElectrico() {
 
         {/* Canvas */}
         <div className="flex-1 relative">
-          {activeScene === 'potencial-carga' ? (
+          {activeScene === 'potencial-carga' && (
             <div className="absolute inset-0">
               <PotencialCargaScene charge={charge} />
             </div>
-          ) : (
+          )}
+          {activeScene === 'equipotenciales' && (
             <div className="absolute inset-0">
               <EquipotencialesScene charge={charge} numLines={numLines} />
+            </div>
+          )}
+          {activeScene === 'dipolo' && (
+            <div className="absolute inset-0">
+              <PotencialDipoloScene charge={Math.abs(charge) || 5} separation={dipoleSep} />
             </div>
           )}
 
@@ -168,6 +187,27 @@ export function PotencialElectrico() {
               <span className="font-semibold text-slate-300">Equipotenciales: </span>
               Son superficies donde V = constante. El trabajo para mover una carga sobre una equipotencial es <strong>cero</strong>. Siempre son perpendiculares a las líneas de campo.
             </div>
+
+            {activeScene === 'dipolo' && (
+              <>
+                <FormulaCard
+                  title="Potencial del dipolo (lejos)"
+                  latex={`V \\approx \\frac{kp\\cos\\theta}{r^2}`}
+                  description="Cae como 1/r² (más rápido que carga puntual). p = qd es el momento dipolar."
+                  color="#c4b5fd"
+                />
+                <div className="p-3 rounded-lg text-xs text-slate-400 leading-relaxed" style={{ backgroundColor: '#0f172a', border: '1px solid #8b5cf630' }}>
+                  <p className="font-semibold text-slate-300 mb-2">Guía del modelo 3D</p>
+                  <p><span className="text-red-400">■</span> Esfera roja — carga +q</p>
+                  <p><span className="text-blue-400">■</span> Esfera azul — carga −q</p>
+                  <p><span className="text-red-400">— </span>Líneas rojas — equipotencial V {'>'} 0</p>
+                  <p><span className="text-blue-400">— </span>Líneas azules — equipotencial V {'<'} 0</p>
+                  <p><span className="text-yellow-400">— </span>Líneas amarillas — campo E (de + a −)</p>
+                  <p><span style={{ color: '#64748b' }}>— </span>Línea gris — plano V = 0</p>
+                  <p className="mt-2">El potencial es simétrico: V(θ) = −V(π−θ)</p>
+                </div>
+              </>
+            )}
           </InfoPanel>
         </div>
       </div>

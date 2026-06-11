@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { Eye, EyeOff, Wifi } from 'lucide-react'
 import { Layout } from '../components/layout/Layout'
+import { InfografiaPanel } from '../components/ui/InfografiaPanel'
 import { SliderControl } from '../components/ui/SliderControl'
 import { FormulaCard } from '../components/ui/FormulaCard'
 import { InfoPanel, ValueDisplay } from '../components/ui/InfoPanel'
@@ -8,7 +9,7 @@ import { CargaPuntualScene, fieldInfoAt } from '../simulations/campo-electrico/C
 import { DipoloElectricoScene } from '../simulations/campo-electrico/DipoloElectrico'
 import { NC_TO_C } from '../physics/constants'
 
-type SceneId = 'carga-puntual' | 'dipolo'
+type SceneId = 'carga-puntual' | 'dipolo' | 'doble-positiva'
 
 // ────────────────────────────────────────────────────────────
 // Toggle visual on/off
@@ -277,8 +278,11 @@ export function CampoElectrico() {
   const [separation, setSeparation] = useState(2)
   const [dipoleShowLines, setDipoleShowLines] = useState(true)
   const [dipoleShowVectors, setDipoleShowVectors] = useState(false)
+  const [bothPositive, setBothPositive] = useState(false)
 
-  const sceneTitle = activeScene === 'carga-puntual' ? 'Carga Puntual' : 'Dipolo Eléctrico'
+  const sceneTitle = activeScene === 'carga-puntual' ? 'Carga Puntual'
+    : activeScene === 'dipolo' ? 'Dipolo Eléctrico'
+    : 'Dos Cargas (+q, +q)'
   const accentColor = activeScene === 'carga-puntual'
     ? (charge >= 0 ? '#ef4444' : '#3b82f6')
     : '#34d399'
@@ -296,7 +300,8 @@ export function CampoElectrico() {
       >
         {[
           { id: 'carga-puntual', label: 'Carga Puntual' },
-          { id: 'dipolo', label: 'Dipolo Eléctrico' },
+          { id: 'dipolo', label: 'Dipolo (+q −q)' },
+          { id: 'doble-positiva', label: 'Dos +q' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -312,9 +317,12 @@ export function CampoElectrico() {
           </button>
         ))}
 
-        <div className="ml-auto flex items-center gap-2 text-xs text-slate-600">
-          <Wifi size={12} />
-          <span>Física calculada en tiempo real</span>
+        <div className="ml-auto flex items-center gap-2">
+          <InfografiaPanel src="/infografias/campo-electrico.png" title="Infografía — Líneas de Campo Eléctrico" accentColor={accentColor} />
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <Wifi size={12} />
+            <span>Física calculada en tiempo real</span>
+          </div>
         </div>
       </div>
 
@@ -354,6 +362,14 @@ export function CampoElectrico() {
             />
           )}
 
+          {(activeScene === 'dipolo' || activeScene === 'doble-positiva') && (
+            <div className="mt-4 p-3 rounded-lg text-xs text-slate-400" style={{ backgroundColor: '#0a101e', border: '1px solid #1e293b' }}>
+              {activeScene === 'dipolo'
+                ? 'Las líneas salen de +q y llegan a −q. El campo es máximo entre las cargas.'
+                : 'Las líneas se repelen entre sí. No hay líneas que conecten las dos cargas.'}
+            </div>
+          )}
+
           {/* Instrucciones de interacción */}
           <div className="mt-6 pt-4 border-t border-slate-800/60 space-y-1">
             <p className="text-xs font-medium text-slate-600">Controles 3D</p>
@@ -371,7 +387,13 @@ export function CampoElectrico() {
             </div>
           ) : (
             <div className="absolute inset-0">
-              <DipoloElectricoScene charge={dipoleCharge} separation={separation} showFieldLines={dipoleShowLines} showVectors={dipoleShowVectors} />
+              <DipoloElectricoScene
+                charge={dipoleCharge}
+                separation={separation}
+                showFieldLines={dipoleShowLines}
+                showVectors={dipoleShowVectors}
+                bothPositive={activeScene === 'doble-positiva'}
+              />
             </div>
           )}
         </div>
@@ -383,8 +405,34 @@ export function CampoElectrico() {
         >
           {activeScene === 'carga-puntual' ? (
             <div className="h-full"><CargaInfoPanel charge={charge} /></div>
-          ) : (
+          ) : activeScene === 'dipolo' ? (
             <div className="h-full"><DipoloInfoPanel charge={dipoleCharge} separation={separation} /></div>
+          ) : (
+            <div className="h-full">
+              <InfoPanel
+                title="Dos Cargas del Mismo Signo"
+                concept="Cuando dos cargas del mismo signo se acercan, sus campos se repelen. Las líneas de campo nunca conectan las dos cargas: se doblan hacia afuera y existe un punto neutro entre ellas donde el campo es cero."
+                color="#34d399"
+              >
+                <FormulaCard
+                  title="Fuerza repulsiva (Coulomb)"
+                  latex={`F = k_e \\frac{q_1 q_2}{r^2}`}
+                  description="Con q₁ y q₂ del mismo signo, F > 0: se repelen."
+                  highlight
+                  color="#34d399"
+                />
+                <FormulaCard
+                  title="Punto neutro (en el eje)"
+                  latex={`E = 0 \\text{ en el centro}`}
+                  description="Por simetría, el campo es cero en el punto medio entre las dos cargas iguales."
+                  color="#a78bfa"
+                />
+                <div className="p-3 rounded-lg text-xs text-slate-400 leading-relaxed" style={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}>
+                  <span className="font-semibold text-slate-300">Diferencia con el dipolo:</span>{' '}
+                  En el dipolo (+q, −q) las líneas conectan las cargas. En el par (+q, +q) las líneas se repelen y existe un punto donde E = 0.
+                </div>
+              </InfoPanel>
+            </div>
           )}
         </div>
       </div>

@@ -1,12 +1,14 @@
 import { useState, useEffect, useMemo } from 'react'
-import { BookOpen, Wifi } from 'lucide-react'
+import { BookOpen, Wifi, Box, Layout as LayoutIcon } from 'lucide-react'
 import { Layout } from '../components/layout/Layout'
+import { InfografiaPanel } from '../components/ui/InfografiaPanel'
 import { SliderControl } from '../components/ui/SliderControl'
 import { FormulaCard } from '../components/ui/FormulaCard'
 import { InfoPanel, ValueDisplay } from '../components/ui/InfoPanel'
 import { QuizEngine } from '../components/ui/QuizEngine'
 import { CapacitorPlanoScene } from '../simulations/capacitancia/CapacitorPlano'
 import { AsociacionCapacitoresScene } from '../simulations/capacitancia/AsociacionCapacitores'
+import { CapacitorVista2DScene } from '../simulations/capacitancia/CapacitorVista2D'
 import { EPSILON_0 } from '../physics/constants'
 import { useProgress } from '../hooks/useProgress'
 import { QUIZZES } from '../data/quizzes'
@@ -19,22 +21,23 @@ const quiz = QUIZZES.find((q) => q.moduleId === 'capacitancia')!
 
 export function Capacitancia() {
   const [activeScene, setActiveScene] = useState<SceneId>('capacitor-plano')
-  const [area, setArea] = useState(0.04)      // m² (20cm x 20cm)
-  const [separation, setSeparation] = useState(0.01)  // m (1cm)
-  const [kappa, setKappa] = useState(1)
-  const [c1, setC1] = useState(4)
-  const [c2, setC2] = useState(6)
-  const [c3, setC3] = useState(3)
-  const [voltage, setVoltage] = useState(12)
-  const [assocMode, setAssocMode] = useState<AssocMode>('paralelo')
-  const [showQuiz, setShowQuiz] = useState(false)
+  const [view3D, setView3D]           = useState(true)   // toggle 3D / 2D dentro de capacitor-plano
+  const [area, setArea]               = useState(0.04)
+  const [separation, setSeparation]   = useState(0.01)
+  const [kappa, setKappa]             = useState(1)
+  const [c1, setC1]                   = useState(4)
+  const [c2, setC2]                   = useState(6)
+  const [c3, setC3]                   = useState(3)
+  const [voltage, setVoltage]         = useState(12)
+  const [assocMode, setAssocMode]     = useState<AssocMode>('paralelo')
+  const [showQuiz, setShowQuiz]       = useState(false)
   const { markVisited, saveQuizScore } = useProgress()
 
   useEffect(() => { markVisited('capacitancia') }, [markVisited])
 
-  const C_pF = useMemo(() => (kappa * EPSILON_0 * area) / separation * 1e12, [area, separation, kappa])
-  const Q_pC = useMemo(() => C_pF * voltage, [C_pF, voltage])
-  const U_J = useMemo(() => 0.5 * C_pF * 1e-12 * voltage * voltage, [C_pF, voltage])
+  const C_pF    = useMemo(() => (kappa * EPSILON_0 * area) / separation * 1e12, [area, separation, kappa])
+  const Q_pC    = useMemo(() => C_pF * voltage, [C_pF, voltage])
+  const U_J     = useMemo(() => 0.5 * C_pF * 1e-12 * voltage * voltage, [C_pF, voltage])
   const E_field = useMemo(() => voltage / separation, [voltage, separation])
 
   return (
@@ -43,7 +46,7 @@ export function Capacitancia() {
       <div className="flex items-center gap-1 px-4 py-2 border-b" style={{ borderColor: `${ACCENT}20` }}>
         {[
           { id: 'capacitor-plano', label: 'Capacitor Plano-Paralelo' },
-          { id: 'asociacion', label: 'Asociación' },
+          { id: 'asociacion',      label: 'Asociación' },
         ].map((tab) => (
           <button key={tab.id} onClick={() => setActiveScene(tab.id as SceneId)}
             className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all"
@@ -52,13 +55,37 @@ export function Capacitancia() {
             {tab.label}
           </button>
         ))}
-        <button onClick={() => setShowQuiz((v) => !v)}
-          className="ml-auto px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all"
-          style={showQuiz ? { color: ACCENT, backgroundColor: `${ACCENT}20` } : { color: '#64748b', backgroundColor: '#1e293b' }}
-        >
-          <BookOpen size={12} />Quiz
-        </button>
-        <div className="flex items-center gap-2 text-xs text-slate-600 ml-2"><Wifi size={12} /><span>Cálculo instantáneo</span></div>
+
+        {/* Toggle 3D / 2D — solo visible en la pestaña del capacitor */}
+        {activeScene === 'capacitor-plano' && (
+          <div className="ml-2 flex items-center gap-1 p-1 rounded-lg" style={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}>
+            <button
+              onClick={() => setView3D(true)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all"
+              style={view3D ? { color: ACCENT, backgroundColor: `${ACCENT}20` } : { color: '#475569' }}
+            >
+              <Box size={11} /> 3D
+            </button>
+            <button
+              onClick={() => setView3D(false)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all"
+              style={!view3D ? { color: ACCENT, backgroundColor: `${ACCENT}20` } : { color: '#475569' }}
+            >
+              <LayoutIcon size={11} /> 2D
+            </button>
+          </div>
+        )}
+
+        <div className="ml-auto flex items-center gap-2">
+          <InfografiaPanel src="/infografias/capacitancia.png" title="Infografía — Capacitancia" accentColor={ACCENT} />
+          <button onClick={() => setShowQuiz((v) => !v)}
+            className="px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all"
+            style={showQuiz ? { color: ACCENT, backgroundColor: `${ACCENT}20` } : { color: '#64748b', backgroundColor: '#1e293b' }}
+          >
+            <BookOpen size={12} />Quiz
+          </button>
+          <div className="flex items-center gap-2 text-xs text-slate-500"><Wifi size={12} /><span>Cálculo instantáneo</span></div>
+        </div>
       </div>
 
       <div className="flex h-[calc(100vh-7.5rem)] overflow-hidden">
@@ -67,7 +94,9 @@ export function Capacitancia() {
           <div className="mb-4">
             <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Escena activa</p>
             <h2 className="text-base font-bold text-slate-200">
-              {activeScene === 'capacitor-plano' ? 'Capacitor Plano-Paralelo' : 'Asociación de Capacitores'}
+              {activeScene === 'capacitor-plano'
+                ? `Capacitor Plano-Paralelo${view3D ? ' (3D)' : ' (2D)'}`
+                : 'Asociación de Capacitores'}
             </h2>
           </div>
 
@@ -78,8 +107,7 @@ export function Capacitancia() {
               <SliderControl label="Separación d" value={separation * 100} min={0.2} max={5} step={0.1} unit=" cm"
                 onChange={(v) => setSeparation(v / 100)} color="#34d399" />
               <SliderControl label="Dieléctrico κ" value={kappa} min={1} max={10} step={0.1}
-                onChange={setKappa} color="#8b5cf6"
-                formatValue={(v) => v.toFixed(1)} />
+                onChange={setKappa} color="#8b5cf6" formatValue={(v) => v.toFixed(1)} />
               <SliderControl label="Voltaje V" value={voltage} min={1} max={100} step={1} unit=" V"
                 onChange={setVoltage} color="#60a5fa" />
             </div>
@@ -105,11 +133,12 @@ export function Capacitancia() {
 
         {/* Canvas */}
         <div className="flex-1 relative">
-          {activeScene === 'capacitor-plano' ? (
+          {activeScene === 'capacitor-plano' && (
             <div className="absolute inset-0">
-              <CapacitorPlanoScene area={area} separation={separation} kappa={kappa} />
+              <CapacitorVista2DScene area={area} separation={separation} kappa={kappa} voltage={voltage} />
             </div>
-          ) : (
+          )}
+          {activeScene === 'asociacion' && (
             <div className="absolute inset-0">
               <AsociacionCapacitoresScene c1={c1} c2={c2} c3={c3} voltage={voltage} mode={assocMode} />
             </div>
@@ -132,10 +161,13 @@ export function Capacitancia() {
 
         {/* Info */}
         <div className="w-72 shrink-0 border-l border-slate-800/60 overflow-y-auto" style={{ backgroundColor: '#0a101e' }}>
-          <InfoPanel title="Capacitancia" concept="Un capacitor almacena energía en el campo eléctrico entre sus placas. La capacitancia C mide su capacidad de almacenar carga por unidad de voltaje." color={ACCENT}>
+          <InfoPanel title="Capacitancia"
+            concept="Un capacitor almacena energía en el campo eléctrico entre sus placas. La capacitancia C mide su capacidad de almacenar carga por unidad de voltaje."
+            color={ACCENT}>
             {activeScene === 'capacitor-plano' ? (
               <>
-                <FormulaCard title="Capacitor plano-paralelo" latex={`C = \\frac{\\kappa\\varepsilon_0 A}{d}`}
+                <FormulaCard title="Capacitor plano-paralelo"
+                  latex={`C = \\frac{\\kappa\\varepsilon_0 A}{d}`}
                   description="C en Faradios. κ es la constante dieléctrica relativa del material entre las placas."
                   variables={[
                     { symbol: '\\varepsilon_0', description: 'Permitividad del vacío', value: '8.85×10⁻¹² F/m' },
@@ -144,25 +176,59 @@ export function Capacitancia() {
                   ]}
                   highlight color={ACCENT}
                 />
-                <FormulaCard title="Energía almacenada" latex={`U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}`} color="#34d399" />
+                <FormulaCard title="Energía almacenada"
+                  latex={`U = \\frac{1}{2}CV^2 = \\frac{Q^2}{2C}`}
+                  color="#34d399"
+                />
                 <ValueDisplay label="Capacitancia C" value={C_pF.toFixed(2)} unit="pF" color={ACCENT} />
-                <ValueDisplay label="Carga Q" value={Q_pC.toFixed(1)} unit="pC" color="#60a5fa" />
-                <ValueDisplay label="Campo E entre placas" value={E_field.toFixed(0)} unit="V/m" color="#f59e0b" />
-                <ValueDisplay label="Energía U" value={U_J.toExponential(2)} unit="J" color="#34d399" />
+                <ValueDisplay label="Carga Q"         value={Q_pC.toFixed(1)} unit="pC" color="#60a5fa" />
+                <ValueDisplay label="Campo E = V/d"   value={E_field.toFixed(0)} unit="V/m" color="#f59e0b" />
+                <ValueDisplay label="Energía U"       value={U_J.toExponential(2)} unit="J" color="#34d399" />
+
+                {/* Guía contextual según vista activa */}
+                <div className="p-3 rounded-lg text-xs text-slate-400 leading-relaxed" style={{ backgroundColor: '#0f172a', border: `1px solid ${ACCENT}25` }}>
+                  <p className="font-semibold text-slate-300 mb-2">
+                    {view3D ? 'Guía del modelo 3D' : 'Guía del modelo 2D'}
+                  </p>
+                  {view3D ? (
+                    <>
+                      <p><span className="text-red-400">■</span> Placa roja — polo positivo (+)</p>
+                      <p><span className="text-blue-400">■</span> Placa azul — polo negativo (−)</p>
+                      <p><span className="text-purple-400">■</span> Volumen morado — dieléctrico (κ {'>'} 1)</p>
+                      <p><span style={{ color: ACCENT }}>■</span> Flechas — campo E entre placas</p>
+                      <p><span className="text-yellow-300">●</span> Partículas — cargas en movimiento</p>
+                    </>
+                  ) : (
+                    <>
+                      <p><span className="text-red-400">■</span> Placa roja — carga positiva (+)</p>
+                      <p><span className="text-blue-400">■</span> Placa azul — carga negativa (−)</p>
+                      <p><span className="text-orange-400">↓</span> Flechas — campo E uniforme</p>
+                      <p><span className="text-purple-400">■</span> Fondo morado — dieléctrico</p>
+                      <p><span className="text-purple-400">⬭</span> Óvalos — moléculas polarizadas</p>
+                      <p className="mt-1">E = V/d es uniforme entre placas grandes.</p>
+                    </>
+                  )}
+                </div>
               </>
             ) : (
               <>
-                <FormulaCard title="Capacitores en paralelo" latex={`C_{eq} = C_1 + C_2 + C_3`} highlight={assocMode === 'paralelo'} color="#3b82f6" />
-                <FormulaCard title="Capacitores en serie" latex={`\\frac{1}{C_{eq}} = \\frac{1}{C_1} + \\frac{1}{C_2} + \\frac{1}{C_3}`} highlight={assocMode === 'serie'} color="#8b5cf6" />
+                <FormulaCard title="Capacitores en paralelo"
+                  latex={`C_{eq} = C_1 + C_2 + C_3`}
+                  highlight={assocMode === 'paralelo'} color="#3b82f6"
+                />
+                <FormulaCard title="Capacitores en serie"
+                  latex={`\\frac{1}{C_{eq}} = \\frac{1}{C_1} + \\frac{1}{C_2} + \\frac{1}{C_3}`}
+                  highlight={assocMode === 'serie'} color="#8b5cf6"
+                />
                 {(() => {
                   const ceq = assocMode === 'paralelo' ? c1 + c2 + c3 : 1 / (1 / c1 + 1 / c2 + 1 / c3)
-                  const Q = ceq * voltage
-                  const U = 0.5 * ceq * voltage * voltage * 1e-6
+                  const Q   = ceq * voltage
+                  const U   = 0.5 * ceq * voltage * voltage * 1e-6
                   return (
                     <>
                       <ValueDisplay label="Capacitancia Ceq" value={`${ceq.toFixed(2)} µF`} color={ACCENT} />
-                      <ValueDisplay label="Carga total Q" value={`${Q.toFixed(1)} µC`} color="#60a5fa" />
-                      <ValueDisplay label="Energía U" value={U.toExponential(2)} unit="J" color="#34d399" />
+                      <ValueDisplay label="Carga total Q"    value={`${Q.toFixed(1)} µC`}   color="#60a5fa" />
+                      <ValueDisplay label="Energía U"        value={U.toExponential(2)}       unit="J" color="#34d399" />
                     </>
                   )
                 })()}
